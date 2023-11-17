@@ -1,13 +1,21 @@
 
+/* eslint-disable */
+
+
+
 // *********** IMPORTS *********** //
 import { useState } from "react"
 
 import axios from "axios";
+
+// Lets us on a command go to another page
+import { useNavigate } from "react-router-dom";
+
 // *********** IMPORTS *********** //
 
 
-
-export default function LoginForm(onLogin){
+                               // Allows us to set the users fullName from backend to call it in on nav
+export default function LoginForm(   {setUserFullName}   ){
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +33,10 @@ export default function LoginForm(onLogin){
     password.length < 8 ? "Password Must be at least 8 characters" : "";
   {/* xxxxx ERROR HANDLING xxxxx */}
 
+
+
+
+  const navigateToAnotherPage = useNavigate();
 
 
   // Plugs into the submit button --> onClick={(evt) => onSubmitLogin(evt)}
@@ -47,6 +59,9 @@ export default function LoginForm(onLogin){
     {/* xxxxx ERROR HANDLING xxxxx */}
 
 
+
+    {/* SUCCESS  IF NO ERRORS POST LOGIN TO SERVER  SUCCESS */}
+
     /* This is basically PostMan and on button click this function posts the info into our backend*/
     axios.post("http://localhost:3000/api/users/login", {
         // This is plugging in our email & password to the backends/server email & password
@@ -54,15 +69,40 @@ export default function LoginForm(onLogin){
           password: password
     }, 
     {
-      // 
+      // ! Receives the cookies from the server and is received on the client !
       withCredentials: true
     })
-    // If response is valid log our backend message results
+    // SUCCESS - If response is valid log our backend message results
     .then(response => {
-      console.log(response);
+      console.log(response.data);
+
+      // Puts the fullName we get back into the local storage
+      localStorage.setItem("fullName", response.data.fullName);
+
+      //Sets this to the fullName from our database  calling from this in message in backend:  fullName: usersLoggedIn.fullName
+      setUserFullName(response.data.fullName);
+
+      navigateToAnotherPage("/");
     })
+    // xxxx ERROR BAD LOGIN xxxx
     .catch(error => {
-      console.log(error);
+    //console.log(error.response.data);
+     //console.log(responseError.Error.details[0].message);
+
+      // if there is an error and a response get the data of the error
+      const responseError = error?.response?.data;
+
+
+      // If bad error set our self made error message to the data from axios
+      if(responseError){
+        // If the error is a string then we send back the stringed response from Axios
+        if(typeof responseError === "string"){ // Bad Username or Password
+          setError(error.response.data);
+        }
+        else if(responseError.error.details){  // Joi validation errors for Email
+          setError(responseError.error.details[0].message);
+        }
+      }
     });
   } // end of onSubmitLogin function
 

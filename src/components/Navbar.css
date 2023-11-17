@@ -1,0 +1,14 @@
+
+
+
+
+.nav-tabs{
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.nav-item-group{
+  display: flex;
+  gap: 10px;
+}

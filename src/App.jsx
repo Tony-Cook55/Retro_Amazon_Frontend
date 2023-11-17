@@ -76,8 +76,17 @@ import LoginForm from './components/LoginForm'
 
 function App() {
 
+  // This will hold in the email about the user once logged in
+  const [userFullName, setUserFullName] = useState("");
 
-
+  // When the component loads use this
+  useEffect(() => {
+    // Getting the fullName and setting it in our local storage to allow for users to refresh and their name stays
+    const getFullName = localStorage.getItem("fullName");
+    if(getFullName){
+      setUserFullName(getFullName);
+    }
+  }, []);
 
 
   return (
@@ -86,7 +95,7 @@ function App() {
 
         <header>
           <nav>
-            <NavBar />
+            <NavBar   userFullName={userFullName}   setUserFullName={setUserFullName}/>
           </nav>
         </header>
 
@@ -94,7 +103,7 @@ function App() {
         <main  className="flex-grow-1">
             <Routes>
               <Route path="/" element={<BookList />} />
-              <Route path="/login" element={<LoginForm />} />
+              <Route path="/login" element={<LoginForm    setUserFullName={setUserFullName}/>} />
               <Route path="/contact" element={<h1>Contact</h1>} />
             </Routes>
         </main>
