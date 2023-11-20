@@ -1,4 +1,8 @@
 
+
+/* eslint-disable */
+
+
 // *********** IMPORTS *********** //
 import axios from "axios"
 
@@ -6,6 +10,9 @@ import { useState, useEffect } from "react"
 
 import { Link, NavLink } from "react-router-dom";
 
+
+import BookItem from "./BookItem";
+
 // *********** IMPORTS *********** //
 
 
@@ -13,7 +20,7 @@ import { Link, NavLink } from "react-router-dom";
 
 
 
-export default function BookList(){
+export default function BookList(  {showToast}  ){
 
 
   const [books, setBooks] = useState([]);
@@ -24,10 +31,10 @@ export default function BookList(){
   // useEffect(() => {
   // }, []);
 
-
+  // GETS ALL OF OUR BOOKS   ||   what ever is in those brackets "so" [deleteCounter], call useEffect
   useEffect(() => {
     // Gets our host and sees if they have the credentials and auth     Send this cookie back to the server
-    axios.get("http://localhost:3000/api/books/books-list",             {withCredentials: true})
+    axios.get(`${import.meta.env.VITE_API_URL}/api/books/books-list`,             {withCredentials: true})
 
     // If you retrieve books then set the books useState to the data you get from backend
     .then(response => {
@@ -36,17 +43,23 @@ export default function BookList(){
     .catch(error => console.log(error));
 
   }, [deleteCounter]);
-  
-  
+
+
 
   function onBookDelete(evt, bookId){
     evt.preventDefault();
 
-    axios.delete(`http://localhost:3000/api/books/delete/${bookId}`, {withCredentials: true})
+    axios.delete(`${import.meta.env.VITE_API_URL}/api/books/delete/${bookId}`, {withCredentials: true})
     .then(response => { 
       // When you delete a book this counter goes up by 1
-      setDeleteCounter(previousCount => previousCount +1)
-      console.log(response.data)
+      setDeleteCounter(previousCount => previousCount + 1);
+
+      // response.data.message is our json message from the backend 
+      console.log(response.data.message);
+
+      // This is our toast plugging in the toast function from app. so our message is our responses message and the type is success
+      showToast(response.data.message, "success");
+
     })
     .catch(error => 
       console.log(error)
@@ -64,21 +77,11 @@ export default function BookList(){
       {!books.length ? <h2><Link to="/login">Please Login To View All Books</Link></h2> :
         
       <div className="row">
-      {books.map(book => (
-          <div key={book._id}  className="col-4">
-            <div className="card">
-              <div className="card-header">
-                {book.title}
-              </div>
-              <div className="card-body">
-                <p className="card-text">{book.description}</p>
-              </div>
-              <div className="card-footer">
-                <button className="btn btn-danger" onClick={(evt) => onBookDelete(evt, book._id)}>Delete</button>
-              </div>
+        {books.map(book => (
+            <div key={book._id}  className="col-4">
+              <BookItem  book={book} key={book._id}   onBookDelete={onBookDelete}/>
             </div>
-          </div>
-      ))};
+        ))}
       </div>
 
       }

@@ -21,7 +21,7 @@ export default function NavBar(      {userFullName,setUserFullName}       ){
     evt.preventDefault();
 
     // axios will go to backend logout code and set the name to nothing and remove the fullName from local Storage
-    axios.post("http://localhost:3000/api/users/logout",
+    axios.post(`${import.meta.env.VITE_API_URL}/api/users/logout`,
     {}, 
     {withCredentials: true})
     .then(response => {

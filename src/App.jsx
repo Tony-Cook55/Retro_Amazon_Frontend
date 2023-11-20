@@ -4,6 +4,7 @@
   1. npm create vite@latest .
   2. npm install
   3. npm i bootstrap
+  
 
   / This allows you to go from page to page \
   4. npm i react-router-dom
@@ -33,6 +34,12 @@
   \\ Steps with Axios for backend //
 
   \/ ADD THIS TO THE BACKEND TO ALLOW FOR axios TO CONNECT TO THE BACKEND \/
+
+  7. npm i react-toastify    ADD these imports:      https://fkhadra.github.io/react-toastify/introduction
+      import { ToastContainer, toast } from 'react-toastify'
+      import "react-toastify/dist/ReactToastify.css"
+
+  8. npm i dotenv   : GETS US THE .env file
 
 
   TO RUN PROGRAM:      npm run dev
@@ -69,6 +76,11 @@ import LoginForm from './components/LoginForm'
 // COMPONENTS //
 
 
+// TOASTIFY //
+import { ToastContainer, toast } from 'react-toastify'
+import "react-toastify/dist/ReactToastify.css"
+// TOASTIFY //
+
 // *********** IMPORTS *********** //
 
 
@@ -89,6 +101,19 @@ function App() {
   }, []);
 
 
+  // This is the little pop up function called toasts that we can call in and set the message we want and type of toast
+  function showToast(message, type){
+    // When called in we must specify the message and the type of toast we want it to look like
+    toast(message, {
+      type: type,              // info, success, warning, error, default
+      position: "bottom-right" // top-left, top-right, top-center, bottom-left, bottom-right, bottom-center
+    });
+  }
+
+
+
+
+
   return (
     <>
       <div className="container       d-flex flex-column min-vh-100">
@@ -101,8 +126,9 @@ function App() {
 
 
         <main  className="flex-grow-1">
+          <ToastContainer />
             <Routes>
-              <Route path="/" element={<BookList />} />
+              <Route path="/" element={<BookList    showToast={showToast} />} />
               <Route path="/login" element={<LoginForm    setUserFullName={setUserFullName}/>} />
               <Route path="/contact" element={<h1>Contact</h1>} />
             </Routes>
