@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 
                                // Allows us to set the users fullName from backend to call it in on nav
-export default function LoginForm(   {setUserFullName}   ){
+export default function LoginForm(   {setUserFullName, setUsersRole}   ){
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,6 +81,9 @@ export default function LoginForm(   {setUserFullName}   ){
 
       //Sets this to the fullName from our database  calling from this in message in backend:  fullName: usersLoggedIn.fullName
       setUserFullName(response.data.fullName);
+
+      // This gets the role from the message sent to check later on in functions like update
+      setUsersRole(response.data.roles);
 
       navigateToAnotherPage("/");
     })

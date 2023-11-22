@@ -73,6 +73,8 @@ import BookList from './components/BookList'
 
 import LoginForm from './components/LoginForm'
 
+import BookEditor from './components/BookEditor'
+
 // COMPONENTS //
 
 
@@ -90,6 +92,9 @@ function App() {
 
   // This will hold in the email about the user once logged in
   const [userFullName, setUserFullName] = useState("");
+
+  // Sets the roles that a user has once logged in
+  const [usersRole, setUsersRole] = useState(null);
 
   // When the component loads use this
   useEffect(() => {
@@ -128,9 +133,12 @@ function App() {
         <main  className="flex-grow-1">
           <ToastContainer />
             <Routes>
-              <Route path="/" element={<BookList    showToast={showToast} />} />
-              <Route path="/login" element={<LoginForm    setUserFullName={setUserFullName}/>} />
+              <Route path="/" element={<BookList    showToast={showToast}  usersRole={usersRole}/>} />
+              <Route path="/login" element={<LoginForm    setUserFullName={setUserFullName} setUsersRole={setUsersRole}/>} />
               <Route path="/contact" element={<h1>Contact</h1>} />
+
+              {/* When you get to this URL */}
+              <Route path="/books/update/:bookId" element={<BookEditor  showToast={showToast}/>} />
             </Routes>
         </main>
 

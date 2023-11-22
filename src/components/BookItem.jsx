@@ -21,7 +21,7 @@ import { Link, NavLink } from "react-router-dom";
 
 
 
-export default function BookItem(  {book, onBookDelete}  ){
+export default function BookItem(  {book, onBookDelete, onBookUpdate, usersRole}  ){
   return(
     <>
     
@@ -36,6 +36,12 @@ export default function BookItem(  {book, onBookDelete}  ){
 
         <div className="card-footer">
           <button className="btn btn-danger" onClick={(evt) => onBookDelete(evt, book._id)}>Delete</button>
+
+          {/* This sees if the user has the role to Update book If so then you will see this link*/}
+          {usersRole.includes("Quality Analyst") && 
+            <Link to={`/books/update/${book._id}`} className="btn btn-info" >Update</Link>
+          }
+
         </div>
     </div>
 

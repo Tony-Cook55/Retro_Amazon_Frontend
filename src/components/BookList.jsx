@@ -20,7 +20,7 @@ import BookItem from "./BookItem";
 
 
 
-export default function BookList(  {showToast}  ){
+export default function BookList(  {showToast, usersRole}  ){
 
 
   const [books, setBooks] = useState([]);
@@ -68,6 +68,8 @@ export default function BookList(  {showToast}  ){
 
 
 
+
+
   return(
     <>
       <h1 className="m-5">BOOK LIST HERE</h1>
@@ -79,7 +81,7 @@ export default function BookList(  {showToast}  ){
       <div className="row">
         {books.map(book => (
             <div key={book._id}  className="col-4">
-              <BookItem  book={book} key={book._id}   onBookDelete={onBookDelete}/>
+              <BookItem  book={book} key={book._id}   onBookDelete={onBookDelete} usersRole={usersRole}/>
             </div>
         ))}
       </div>
