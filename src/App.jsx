@@ -75,6 +75,7 @@ import LoginForm from './components/LoginForm'
 
 import BookEditor from './components/BookEditor'
 
+import AddBook from './components/AddBook'
 // COMPONENTS //
 
 
@@ -125,7 +126,7 @@ function App() {
 
         <header>
           <nav>
-            <NavBar   userFullName={userFullName}   setUserFullName={setUserFullName}/>
+            <NavBar   userFullName={userFullName}   setUserFullName={setUserFullName}  usersRole={usersRole}/>
           </nav>
         </header>
 
@@ -139,6 +140,8 @@ function App() {
 
               {/* When you get to this URL */}
               <Route path="/books/update/:bookId" element={<BookEditor  showToast={showToast}/>} />
+
+              <Route path="/addbook" element={<AddBook    showToast={showToast}/>} />
             </Routes>
         </main>
 

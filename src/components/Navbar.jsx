@@ -13,7 +13,7 @@ import axios from "axios";
 
 
                               // Allows us to get the fullName from the user logging in and setting their fullName
-export default function NavBar(      {userFullName,setUserFullName}       ){
+export default function NavBar(      {userFullName,setUserFullName,   usersRole}       ){
   
 
   /* LOGOUT BUTTON FUNCTION */
@@ -54,6 +54,16 @@ export default function NavBar(      {userFullName,setUserFullName}       ){
             </li>
           }
 
+
+            {/* If usersRole has a value do the contains. If it doesn't have a value do nothing. */}
+            {usersRole?.includes("Developer") &&
+                <li className="nav-item">
+                  <NavLink to="addbook" className="nav-link">
+                    Add A Book
+                  </NavLink>
+              </li>
+            }
+
           <li className="nav-item">
             <NavLink to="/contact" className="nav-link">
               Contact
@@ -69,11 +79,14 @@ export default function NavBar(      {userFullName,setUserFullName}       ){
                     {userFullName}
                   </NavLink>
                 </li>
+
                 <li className="nav-item">
                   <button className="nav-link"    onClick={(evt) => onClickLogout(evt)}>
                     Logout
                   </button>
                 </li>
+
+
               </div>
             }
 

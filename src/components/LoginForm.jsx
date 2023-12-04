@@ -84,6 +84,7 @@ export default function LoginForm(   {setUserFullName, setUsersRole}   ){
 
       // This gets the role from the message sent to check later on in functions like update
       setUsersRole(response.data.roles);
+      console.log(response.data.roles);
 
       navigateToAnotherPage("/");
     })
