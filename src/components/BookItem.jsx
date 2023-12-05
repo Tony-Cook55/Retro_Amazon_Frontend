@@ -31,7 +31,40 @@ export default function BookItem(  {book, onBookDelete, onBookUpdate, usersRole}
         </div>
 
         <div className="card-body">
-          <p className="card-text">{book.description}</p>
+          <p className="card-text">
+            <span className="text-primary">Description 
+              <br/>
+            </span>
+            {book.description}
+          </p>
+
+          <p className="card-text">
+            <span className="text-primary">Author 
+              <br/>
+            </span>
+            {book.author}
+          </p>
+
+          <p className="card-text">
+            <span className="text-primary">Genre 
+              <br/>
+            </span>
+            {book.genre}
+          </p>
+
+          <p className="card-text">
+            <span className="text-primary">Year 
+              <br/>
+            </span>
+            {book.publication_year}
+          </p>
+
+          <p className="card-text">
+            <span className="text-primary">Price 
+              <br/>
+            </span>
+            $ {book.price}
+          </p>
         </div>
 
         <div className="card-footer">
