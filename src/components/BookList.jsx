@@ -30,67 +30,57 @@ export default function BookList(  {showToast, usersRole}  ){
     // PAGES AND NEW PAGES //
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+
+    const [searchParams, setSearchParams] = useState({keywords: "", minPrice:"", maxPrice:"", genre:"", sortBy:""})
+
+
+
+    function onBookDelete(evt, bookId){
+      evt.preventDefault();
   
+      axios.delete(`${import.meta.env.VITE_API_URL}/api/books/delete/${bookId}`, {withCredentials: true})
+      .then(response => { 
+        // When you delete a book this counter goes up by 1
+        setDeleteCounter(previousCount => previousCount + 1);
+  
+        // response.data.message is our json message from the backend 
+        console.log(response.data.message);
+  
+        // This is our toast plugging in the toast function from app. so our message is our responses message and the type is success
+        showToast(response.data.message, "success");
+  
+      })
+      .catch(error => 
+        console.log(error)
+      );
+    }
+
 
 
   // GETS ALL OF OUR BOOKS   ||   what ever is in those brackets "so" [deleteCounter], call useEffect
   useEffect(() => {
-    // Gets our host and sees if they have the credentials and auth     Send this cookie back to the server
-    axios.get(`${import.meta.env.VITE_API_URL}/api/books/books-list`, 
-      {withCredentials: true}
-    )
+    // This just gets all unfiltered books
+    const fetchInitialBooks = () => {
+        // Gets our host and sees if they have the credentials and auth     Send this cookie back to the server
+        axios.get(`${import.meta.env.VITE_API_URL}/api/books/books-list/`, 
+          {withCredentials: true,
+            params: {pageSize: 3, pageNumber: 1} // These are in the backend
+          }
+        )
+        // If you retrieve books then set the books useState to the data you get from backend
+        .then(response => {
+          // console.log(`${JSON.stringify(response.data.books)}`);
+          setBooks(response.data.books); // Assuming response contains books
+          setTotalPages(Math.ceil(response.data.totalCount / 3)); // Total count is returned
+          setCurrentPage(1);
+        })
+        .catch(error => console.log(error));
+    };
 
-    // If you retrieve books then set the books useState to the data you get from backend
-    .then(response => {
-
-      // This below sets the total amount of pages there are based on the amount of items we have
-      const pageSize = 3;
-      const totalBooks = response.data.length;
-      const pages = Math.ceil(totalBooks/pageSize);
-      setTotalPages(pages);
-
-      handlePageChange(currentPage);
-
-      // setBooks(response.data);
-    })
-    .catch(error => console.log(error));
+    fetchInitialBooks();
 
   }, [deleteCounter]);
 
-
-  // This will reload the list of items for every time the page button is clicked
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    axios.get(`${import.meta.env.VITE_API_URL}/api/books/books-list`, 
-      {withCredentials: true , params:{pageNumber, pageSize: 3}}
-    )
-    .then(response => {
-      setBooks(response.data);
-    })
-    .catch(error => console.log(error))
-  }
-
-
-
-  function onBookDelete(evt, bookId){
-    evt.preventDefault();
-
-    axios.delete(`${import.meta.env.VITE_API_URL}/api/books/delete/${bookId}`, {withCredentials: true})
-    .then(response => { 
-      // When you delete a book this counter goes up by 1
-      setDeleteCounter(previousCount => previousCount + 1);
-
-      // response.data.message is our json message from the backend 
-      console.log(response.data.message);
-
-      // This is our toast plugging in the toast function from app. so our message is our responses message and the type is success
-      showToast(response.data.message, "success");
-
-    })
-    .catch(error => 
-      console.log(error)
-    );
-  }
 
 
 
@@ -99,40 +89,40 @@ export default function BookList(  {showToast, usersRole}  ){
     evt.preventDefault();
 
     // the 3rd . like  .search || .minPrice  ==  the id of the input
-    const keywordSearch = evt.target.search.values;
-
+    const keywords = evt.target.search.value;
     const minPrice = evt.target.minPrice.value;
     const maxPrice = evt.target.maxPrice.value;
-
     const genre = evt.target.genre.value;
-
     const sortBy = evt.target.sortBy.value;
 
+    const newSearchParams = {keywords, minPrice, maxPrice, genre, sortBy};
+    setSearchParams(newSearchParams);
+    fetchBooks({...newSearchParams, pageSize: 3, pageNumber: 1})
 
-
-
-    axios.get(`${import.meta.env.VITE_API_URL}/api/books/books-list`,
-      {withCredentials: true , 
-      // These need to match the name of the key we called it like in postman
-      params: {keywords: keywordSearch, minPrice, maxPrice, genre, sortBy, /*pageNumber: 1, pageSize: 3*/} }  // Passing the param or key from postman
-    )
-
-    // If you retrieve books then set the books useState to the data you get from backend
-    .then(response => {
-      // IF the responses data is an empty array of items, DO NOT UPDATE TO SHOW
-      if(response.data.length === 0){
-        console.log("NO BOOKS BRO!");
-        return
-      };
-
-      setBooks(response.data);
-    })
-    .catch(error => console.log(error));
   }
 
 
 
 
+  const fetchBooks = (params) => {
+      //  console.log(`Search params are: ${JSON.stringify(params)}`);
+      axios.get(`${import.meta.env.VITE_API_URL}/api/books/books-list/`, 
+      {withCredentials: true,
+        params: {...params, pageSize: 3} 
+      }
+      )
+      .then(response => {
+        setBooks(response.data.books); // Assuming response contains books
+        setTotalPages(Math.ceil(response.data.totalCount / 3)); // Total count is returned
+        // Setting the page to 1 when searching
+        setCurrentPage(params.pageNumber || 1);
+      })
+      .catch(error => console.log(error));
+    }
+
+
+
+  // This creates an array of pages by taking the amount of pages from the useEffect then adds based on how many needed
   const generatePageNumbers = () => {
     const pageNumbers = [];
     for(let i = 1; i <= totalPages; i++){
@@ -142,6 +132,18 @@ export default function BookList(  {showToast, usersRole}  ){
   }
 
 
+  // This will reload the list of items for every time the page button is clicked
+  const handlePageChange = (pageNumber) => {
+    fetchBooks({...searchParams, pageNumber});
+  }
+
+
+
+
+
+
+
+
 
   return(
     <>
@@ -149,7 +151,7 @@ export default function BookList(  {showToast, usersRole}  ){
       
 
       {/* If there is no books, display the h2  : IF THERE ARE : Map and list all of the following items*/}
-      {!books.length ? <h2><Link to="/login">Please Login To View All Books</Link></h2> :
+      {!books.length ? <h2>Please <Link to='/login'>Login</Link> to See Books</h2> :
         
       <div className="row">
 
@@ -222,9 +224,11 @@ export default function BookList(  {showToast, usersRole}  ){
 
 
           <nav aria-label="Page Navigation">
-            <ul className="">
+            <ul className="pagination">
+              {/* Returns the number page from the array then maps over each pageNumber*/}
+              {/* If the currentPage your on is === to the number your own it will then make the class active to be blue*/}
               {generatePageNumbers().map((pageNumber) => (
-                <li className={`page-item ${pageNumber === currentPage ? "Active" : ""}`} key={pageNumber}>
+                <li className={`page-item ${pageNumber === currentPage ? "active" : ""}`} key={pageNumber}>
                   <button className="page-link" onClick={() => handlePageChange(pageNumber)}>{pageNumber}</button>
                 </li>
               ))}
